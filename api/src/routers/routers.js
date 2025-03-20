@@ -6,6 +6,8 @@ import AtividadeRepository from "../repositories/AtividadeRepository.js";
 const router = Router();
 
 
+// --------------------- USUARIO ---------------------
+
 router.get('/usuarios', async (req, res) => {
     try {
         const usuarios = await UsuarioRepository.findAll();
@@ -72,7 +74,6 @@ router.delete('/usuarios/:id', async (req, res) => {
 });
 
 
-
 // --------------------- ATIVIDADES ---------------------
 
 
@@ -81,12 +82,53 @@ router.post('/atividades/:login', async (req, res) => {
     const { nome, descricao, dataHoraInicio, dataHoraFim, status } = req.body;
     try {
         const atividade = await AtividadeRepository.create({nome, descricao, dataHoraInicio, dataHoraFim, status, login});
-        res.json(atividade);
+        res.status(201).json(atividade);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar usuários', error: error.message });
     }
 });
 
+router.get('/atividades/:login', async (req, res) => {
+    const { login } = req.params;
+    try {
+        const atividades = await AtividadeRepository.findAllByLogin({login});
+        res.status(200).json(atividades);
+    } catch (error) {
+        res.status(404).json({ message: 'Erro ao buscar atividades', error: error.message });
+    }
+});
 
+router.patch('/atividades/:login/status', async (req, res) => {
+    const { login } = req.params;
+    const { idAtividade, novoStatus } = req.query;
+
+    try {
+        const atividade = await AtividadeRepository.update({
+            login,
+            idAtividade,
+            novoStatus
+        });
+        res.status(200).json(atividade);
+    } catch (error) {
+        res.status(404).json({ message: 'Erro ao atualizar status da atividade!', error: error.message });
+    }
+});
+
+router.delete('/atividades/:login', async (req, res) => {
+    const { login } = req.params;
+    const { idAtividade } = req.query;
+
+    try {
+        await AtividadeRepository.delete({
+            login,
+            idAtividade
+        });
+
+        res.status(204).send();
+
+    } catch (error) {
+        res.status(404).json({ message: 'Erro ao deletar atividade!', error: error.message }); 
+    }
+});
 
 export default router;
