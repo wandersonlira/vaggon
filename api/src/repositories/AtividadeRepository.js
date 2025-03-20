@@ -4,41 +4,17 @@ import UsuarioRepository from "./UsuarioRepository.js";
 
 class AtividadeRepository {
 
-    static async findUsuarioByLogin( login ) {
-        if (!login) {
-            throw new Error('O campo login não foi definido.'); 
-        }
-
-        const usuario = await UsuarioRepository.findByLogin(login);
-        if (!usuario) {
-            throw new Error('Usuário não encontrado.');
-        }
-
-        return usuario;
+    constructor() {
+        this.atividadesModel = Atividades;
     }
+    
 
 
-    async create({ nome, descricao, dataHoraInicio, dataHoraFim, status, login }) {
-        // const usuario = await UsuarioRepository.findByLogin(login);
-        // const atividade = await Atividades.create({ 
-        //     nome, descricao, dataHoraInicio, 
-        //     dataHoraFim, status, usuarioId: usuario.id 
-        //     });
-        // return atividade;
+    async create({ nome, descricao, dataHoraInicio, dataHoraFim, status, usuarioId }) {
         try {
-
-            if (!nome || !descricao || !dataHoraInicio || !dataHoraFim || !status || !login) {
-                throw new Error('Todos os campos são obrigatórios.');
-            }
-
-            const usuario = await UsuarioRepository.findByLogin(login);
-            if (!usuario) {
-                throw new Error('Usuário não encontrado.');
-            }
-
-            const atividade = await Atividades.create({ 
+            const atividade = await this.atividadesModel.create({ 
                 nome, descricao, dataHoraInicio, 
-                dataHoraFim, status, usuarioId: usuario.id 
+                dataHoraFim, status, usuarioId: usuarioId
                 });
 
             return atividade;
@@ -49,12 +25,11 @@ class AtividadeRepository {
         }
     }
 
-    async findAllByLogin({ login }) {
+    async findAllByLogin({ usuarioId }) {
         try {
-            const usuario = await AtividadeRepository.findUsuarioByLogin(login);
-            const atividades = await Atividades.findAll({
+            const atividades = await this.atividadesModel.findAll({
                 where: {
-                    usuarioId: usuario.id
+                    usuarioId: usuarioId
                 }
             });
 
@@ -67,15 +42,13 @@ class AtividadeRepository {
 
     }
 
-    async update({ login, idAtividade, novoStatus }) {
+    async update({ usuarioId, idAtividade, novoStatus }) {
         try {
-            const usuario = await AtividadeRepository.findUsuarioByLogin(login);
-            const atividade = await Atividades.findByPk(idAtividade, {
+            const atividade = await this.atividadesModel.findByPk(idAtividade, {
                 where: {
-                    usuarioId: usuario.id
+                    usuarioId: usuarioId
                 }
             });
-
             atividade.status = novoStatus;
             await atividade.save();
 
@@ -87,18 +60,16 @@ class AtividadeRepository {
         }
     }
 
-    async delete({ login, idAtividade }) {
+    async delete({ usuarioId, idAtividade }) {
         try {
-            const usuario = await AtividadeRepository.findUsuarioByLogin(login);
-            const atividade = await Atividades.findByPk(idAtividade, {
+            const atividade = await this.atividadesModel.findByPk(idAtividade, {
                 where: {
-                    usuarioId: usuario.id
+                    usuarioId: usuarioId
                 }
             });
 
             await atividade.destroy();
-
-            
+ 
         } catch (error) {
             console.error(error);
             throw new Error(`Erro ao deletar a atividade: ${error.message}`);

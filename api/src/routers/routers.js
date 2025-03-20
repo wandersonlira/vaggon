@@ -1,6 +1,8 @@
 import { Router } from "express";
 import UsuarioRepository from "../repositories/UsuarioRepository.js";
 import AtividadeRepository from "../repositories/AtividadeRepository.js";
+import UsuarioService from "../services/UsuarioService.js";
+import AtividadesService from "../services/AtividadesService.js";
 
 
 const router = Router();
@@ -8,9 +10,10 @@ const router = Router();
 
 // --------------------- USUARIO ---------------------
 
+
 router.get('/usuarios', async (req, res) => {
     try {
-        const usuarios = await UsuarioRepository.findAll();
+        const usuarios = await UsuarioService.findAll();
         res.json(usuarios);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar usuários', error: error.message });
@@ -21,7 +24,7 @@ router.get('/usuarios', async (req, res) => {
 router.get('/usuarios/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        const usuario = await UsuarioRepository.findById(id);
+        const usuario = await UsuarioService.findById(id);
         if (!usuario) {
             return res.status(404).json({ message: 'Usuário não encontrado' });
         }
@@ -35,7 +38,7 @@ router.get('/usuarios/:id', async (req, res) => {
 router.post('/usuarios', async (req, res) => {
     const { login, senha } = req.body; // Exemplo de dados que poderiam ser enviados no corpo da requisição
     try {
-        const novoUsuario = await UsuarioRepository.create({ login, senha });
+        const novoUsuario = await UsuarioService.create({ login, senha });
         res.status(201).json(novoUsuario);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao criar usuário', error: error.message });
@@ -66,7 +69,8 @@ router.put('/usuarios/:id', async (req, res) => {
 router.delete('/usuarios/:id', async (req, res) => {
     const { id } = req.params;
     try {
-        await UsuarioRepository.delete(id);
+        // await UsuarioRepository.delete(id);
+        await UsuarioService.delete(id);
         res.status(204).send();
     } catch (error) {
         res.status(404).json({ message: 'Erro ao excluir usuário', error: error.message });
@@ -81,7 +85,7 @@ router.post('/atividades/:login', async (req, res) => {
     const {login} = req.params;
     const { nome, descricao, dataHoraInicio, dataHoraFim, status } = req.body;
     try {
-        const atividade = await AtividadeRepository.create({nome, descricao, dataHoraInicio, dataHoraFim, status, login});
+        const atividade = await AtividadesService.create({nome, descricao, dataHoraInicio, dataHoraFim, status, login});
         res.status(201).json(atividade);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar usuários', error: error.message });
@@ -91,7 +95,7 @@ router.post('/atividades/:login', async (req, res) => {
 router.get('/atividades/:login', async (req, res) => {
     const { login } = req.params;
     try {
-        const atividades = await AtividadeRepository.findAllByLogin({login});
+        const atividades = await AtividadesService.findAll({login})
         res.status(200).json(atividades);
     } catch (error) {
         res.status(404).json({ message: 'Erro ao buscar atividades', error: error.message });
@@ -103,7 +107,7 @@ router.patch('/atividades/:login/status', async (req, res) => {
     const { idAtividade, novoStatus } = req.query;
 
     try {
-        const atividade = await AtividadeRepository.update({
+        const atividade = await AtividadesService.update({
             login,
             idAtividade,
             novoStatus
