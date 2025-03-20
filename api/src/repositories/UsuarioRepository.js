@@ -1,4 +1,3 @@
-// import { where } from "sequelize";
 import Atividades from "../domain/entities/Atividades.js";
 import Usuario from "../domain/entities/Usuario.js";
 

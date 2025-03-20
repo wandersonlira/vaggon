@@ -4,7 +4,7 @@ import UsuarioRepository from "../repositories/UsuarioRepository.js";
 class AtividadesService {
 
     constructor() {
-        this.serviceAtividade = AtividadeRepository;
+        this.serviceAtividade = new AtividadeRepository();
         this.serviceUsuario = UsuarioRepository;
     }
 

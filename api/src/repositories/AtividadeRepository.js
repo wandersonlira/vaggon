@@ -1,8 +1,6 @@
-import { where } from "sequelize";
 import Atividades from "../domain/entities/Atividades.js";
-import UsuarioRepository from "./UsuarioRepository.js";
 
-class AtividadeRepository {
+export default class AtividadeRepository {
 
     constructor() {
         this.atividadesModel = Atividades;
@@ -76,5 +74,3 @@ class AtividadeRepository {
         }
     }
 }
-
-export default new AtividadeRepository();
