@@ -9,7 +9,7 @@ import './styles.css';
 import logo from '../../assets/logo.svg';
 
 
-export default function NewBook() {
+export default function NewItem() {
     const [id, setId] = useState(null);
     const [descricao, setDescricao] = useState('');
     const [dataHoraInicio, setDatainicio] = useState('');
@@ -18,13 +18,13 @@ export default function NewBook() {
     const [status, setStatus] = useState('');
 
     const navigate = useNavigate();
-    const {bookId} = useParams();
+    const {bookId: itemId} = useParams();
 
     const accessToken = localStorage.getItem('accessToken');
 
     const loadBook = useCallback( async () => {
         try {
-            const response = await api.get(`api/atividades/${localStorage.getItem('login')}/atividade/${bookId}`, {
+            const response = await api.get(`api/atividades/${localStorage.getItem('login')}/atividade/${itemId}`, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`
                 }
@@ -39,32 +39,34 @@ export default function NewBook() {
             setStatus(response.data.atividades[0].status);
         } catch (error) {
             alert('Erro ao carregar agenda! Tente novamente!');
-            navigate('/book')
+            navigate('/registros')
         }
-    }, [accessToken, bookId, navigate]);
+    }, [accessToken, itemId, navigate]);
     
 
     useEffect(() => {
-        if (bookId === '0') return;
+        if (itemId === '0') return;
         else loadBook();
-    }, [bookId, loadBook]);
+    }, [itemId, loadBook]);
 
 
     async function saveOrUpdate(e) {
         e.preventDefault();
         const data = {nome, descricao, dataHoraInicio, dataHoraFim, status}
         try {
-            if (bookId === '0') {
+            if (itemId === '0') {
                 await api.post(`api/atividades/${localStorage.getItem('login')}`, data, {
                     headers: {
                         Authorization: `Bearer ${accessToken}`
                     }
                 }); 
             } else {
-                await api.patch(`api/atividades/${localStorage.getItem('login')}/status?idAtividade=${id}&novoStatus=${status}`); 
-                 console.log(status, id)
+            await api.patch(`api/atividades/${localStorage.getItem('login')}/status`, {
+                idAtividade: id,
+                novoStatus: data.status
+            });
             }
-            navigate('/book')    
+            navigate('/registros')    
         } catch (error) {
             alert('Erro ao registrar o livro! Tente novamente!');
         }
@@ -76,9 +78,9 @@ export default function NewBook() {
             <div className="content">
                 <section className="form">
                     <img src={logo} alt="Lira" />
-                    <h1>{bookId === '0' ? 'Adicionar' : 'Atualizar'} Novo Registro </h1>
-                    <p>Insira as informações na agenda e clique em {bookId === '0' ? "'Adicionar'" : "'Atualizar'"}!</p>
-                    <Link className="back-link" to="/book">
+                    <h1>{itemId === '0' ? 'Adicionar' : 'Atualizar'} Novo Registro </h1>
+                    <p>Insira as informações na agenda e clique em {itemId === '0' ? "'Adicionar'" : "'Atualizar'"}!</p>
+                    <Link className="back-link" to="/registros">
                         <FiArrowLeft size={16} color="#251fc5" />
                         Voltar aos registros
                     </Link>
@@ -115,7 +117,7 @@ export default function NewBook() {
                         onChange={e => setStatus(e.target.value)}
                         />
 
-                    <button className="button" type="submit">{bookId === '0' ? 'Adicionar' : 'Atualizar'}</button>
+                    <button className="button" type="submit">{itemId === '0' ? 'Adicionar' : 'Atualizar'}</button>
                     
                 </form>
             </div>

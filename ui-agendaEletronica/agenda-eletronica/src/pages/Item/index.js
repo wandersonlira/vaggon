@@ -7,7 +7,7 @@ import LogoImage from '../../assets/logo.svg'
 import api from "../../services/api";
 
 
-export default function Book() {
+export default function Item() {
     const navigate = useNavigate();
     const [userInfo, setUserInfo] = useState({ login: ''});
     const [books, setBooks] = useState([]);

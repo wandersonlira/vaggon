@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FiLock, FiUser} from "react-icons/fi";
 import './styles.css';
 
@@ -26,7 +26,7 @@ export default function Login() {
         try {
             await api.post('/api/usuarios/auth/', data);
             localStorage.setItem('login', login);
-            navigate('/book')
+            navigate('/registros')
         } catch (error) {
             alert('Falha no login. Tente novamente!')
         }
@@ -59,6 +59,9 @@ export default function Login() {
                     </div>
                     <button className="button" type="submit">Entrar</button>
                 </form>
+                <div className="register-link">
+                    <p>Ainda não tem um login? <Link to="/cadastrar">Cadastrar novo usuário</Link></p>
+                </div>
             </section>
 
             <img src={logoAuth} alt="Login" />
