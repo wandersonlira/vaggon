@@ -3,7 +3,7 @@ import UsuarioRepository from "../repositories/UsuarioRepository.js";
 class UsuarioService {
 
     constructor() {
-        this.service = UsuarioRepository;
+        this.repository = UsuarioRepository;
     }
 
 
@@ -12,11 +12,11 @@ class UsuarioService {
             throw new Error('Login e senha são obrigatórios.');
         }
         try {
-            const usuarioExiste = await this.findByLogin(login);
+            const usuarioExiste = await this.repository.findByLogin(login);
             if (usuarioExiste) {
                 throw new Error('Login existente!')
             }
-            const usuario = await this.service.create({ login, senha });
+            const usuario = await this.repository.create({ login, senha });
             return usuario;
         } catch (error) {
             console.error('Erro ao tentar criar usuário:', error);
@@ -26,7 +26,7 @@ class UsuarioService {
 
     async findAll() {
         try {
-            const usuarios = await this.service.findAll();
+            const usuarios = await this.repository.findAll();
             return usuarios;
         } catch (error) {
             console.error('Erro ao buscar usuários:', error);
@@ -39,7 +39,7 @@ class UsuarioService {
             throw new Error('O login é obrigatório.');
         }
         try {
-            const usuario = await this.service.findByLogin(login);
+            const usuario = await this.repository.findByLogin(login);
 
             if (!usuario) {
                 throw new Error('Usuário não encontrado.');
@@ -52,13 +52,35 @@ class UsuarioService {
         }
     }
 
+    async authentication({login, senha}) {
+        if (!login) {
+            throw new Error('O login é obrigatório.');
+        }
+        try {
+            const usuario = await this.repository.authentication(login);
+
+            if (!usuario) {
+                throw new Error('Usuário não encontrado.');
+            }
+
+            if (senha != usuario.senha) {
+                throw new Error('Usuário não autorizado!');
+            }
+    
+            return true;
+        } catch (error) {
+            console.error('Erro ao buscar usuário pelo login:', error);
+            throw new Error(`Erro ao buscar usuário: ${error.message || error}`);
+        }
+    }
+
     async findById(id) {
         if (!id) {
             throw new Error('O ID é obrigatório.');
         }
     
         try {
-            const usuario = await this.service.findById(id);
+            const usuario = await this.repository.findById(id);
             if (!usuario) {
                 throw new Error(`Usuário com ID ${id} não encontrado.`);
             }
@@ -78,7 +100,7 @@ class UsuarioService {
             if (!usuario) {
                 throw new Error(`Usuário com ID=${id} não encontrado para exclusão.`);
             }
-            await this.service.delete(usuario);
+            await this.repository.delete(usuario);
         } catch (error) {
             console.error('Erro ao tentar excluir o usuário:', error);
             throw new Error(`Erro ao excluir o usuário: ${error.message || error}`);

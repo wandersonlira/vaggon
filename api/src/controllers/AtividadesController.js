@@ -12,6 +12,17 @@ class AtividadesController {
                 res.status(404).json({ message: 'Erro ao buscar atividades', error: error.message });
             }
         }
+
+
+        async indexAtividade(req, res) {  
+            const { login, atividadeId } = req.params;
+            try {
+                const atividades = await AtividadesService.getAtividadeById(login, atividadeId);
+                res.status(200).json(atividades);
+            } catch (error) {
+                res.status(404).json({ message: 'Erro ao buscar atividades', error: error.message });
+            }
+        }
     
     
         async store(req, res) {

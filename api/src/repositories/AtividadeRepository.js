@@ -40,6 +40,15 @@ export default class AtividadeRepository {
 
     }
 
+
+    async atividadeId({atividadeId}) {
+        const atividade = await this.atividadesModel.findOne({where: {
+            id: atividadeId
+        }});
+        
+        return atividade;
+    }
+
     async update({ usuarioId, idAtividade, novoStatus }) {
         try {
             const atividade = await this.atividadesModel.findByPk(idAtividade, {

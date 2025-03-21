@@ -49,6 +49,31 @@ class UsuarioRepository {
         return usuario
     }
 
+    async authentication(login) {
+        const usuario = await this.usuarioModel.findOne({
+            where: {
+                login: login
+            }
+        });
+
+        return usuario;
+    }
+
+
+    async findUsuarioEAtividadeById(id, atividadeId) {
+        const usuario = await this.usuarioModel.findOne({
+            where: { id },
+            include: {
+                model: Atividades,
+                as: 'atividades',
+                where: { id: atividadeId }
+            }
+        });
+    
+        return usuario;
+    }
+    
+
     async delete(usuario) {
         await usuario.destroy({ where: {
             id: usuario.id

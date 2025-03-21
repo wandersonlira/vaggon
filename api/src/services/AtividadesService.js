@@ -48,6 +48,23 @@ class AtividadesService {
         }
     }
 
+    async getAtividadeById(login, atividadeId) {
+        try {
+            const usuario = await this.#buscaEValidaLogin(login);
+    
+            const atividade = await this.serviceUsuario.findUsuarioEAtividadeById(usuario.id, atividadeId);
+            
+            if (!atividade) {
+                throw new Error('Atividade não encontrada');
+            }
+    
+            return atividade;
+        } catch (error) {
+            console.error(error.message);
+            throw new Error(`Erro ao recuperar a atividade: ${error.message}`);
+        }
+    }
+    
     async update({ login, idAtividade, novoStatus }) {
         try {
             const usuario = await this.#buscaEValidaLogin(login);

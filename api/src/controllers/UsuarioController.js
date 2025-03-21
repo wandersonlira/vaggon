@@ -31,6 +31,20 @@ class UsuarioController {
     }
 
 
+    async auth(req, res) {
+        const { login, senha } = req.body;
+        try {
+            const usuario = await UsuarioService.authentication({login, senha});
+            if (!usuario) {
+                return res.status(404).json({ message: 'Usuário não encontrado' });
+            }
+            res.status(200).send();
+        } catch (error) {
+            res.status(500).json({ message: 'Erro ao buscar usuário', error: error.message });
+        }
+    }
+
+
     async store(req, res) {
         const { login, senha } = req.body;
         try {
